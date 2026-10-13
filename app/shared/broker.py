@@ -28,6 +28,19 @@ async def ensure_exchange_and_queue(
     return exchange, queue
 
 
+def decode_message_body(raw_body: bytes | str | None) -> dict[str, Any]:
+    if raw_body is None:
+        raise ValueError("Message body is empty.")
+
+    if isinstance(raw_body, bytes):
+        raw_body = raw_body.decode("utf-8")
+
+    payload = json.loads(raw_body)
+    if not isinstance(payload, dict):
+        raise ValueError("Message body is not a JSON object.")
+    return payload
+
+
 async def publish_payload(
     channel: AbstractChannel,
     exchange_name: str,
