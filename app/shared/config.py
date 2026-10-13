@@ -9,9 +9,11 @@ class Settings(BaseSettings):
 
     app_name: str = Field(default="Tenant Provisioning Control Plane")
     database_url: str = Field(
-        default="postgresql+psycopg://tenant_provisioner:tenant_provisioner@localhost:5432/"
-        "tenant_provisioner"
+        default="postgresql+psycopg://postgres:postgres@localhost:5432/tenant_provisioner"
     )
+    rabbitmq_url: str = Field(default="amqp://guest:guest@localhost:5672/")
+    outbox_batch_size: int = Field(default=50, ge=1)
+    outbox_poll_interval_seconds: float = Field(default=2.0, gt=0)
     environment: str = Field(default="local")
     log_level: str = Field(default="INFO")
 
