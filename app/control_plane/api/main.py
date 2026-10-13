@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 
 from app.control_plane.api.errors import register_exception_handlers
@@ -21,3 +22,12 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "app.control_plane.api.main:app",
+        host="0.0.0.0",  # nosec B104  # noqa: S104
+        port=8000,
+        reload=False,
+    )

@@ -120,3 +120,12 @@ async def publish_pending_events(
 
 
 publish_pending_rows = publish_pending_events
+
+
+async def _main() -> None:
+    publisher = OutboxPublisher()
+    await publisher.run()
+
+
+if __name__ == "__main__":
+    asyncio.run(_main())

@@ -9,6 +9,7 @@ from aio_pika.abc import AbstractIncomingMessage
 
 from app.control_plane.application.progress import apply_worker_progress, parse_progress_payload
 from app.shared.broker import connect_robust, decode_message_body, ensure_exchange_and_queue
+from app.shared.config import get_settings
 from app.shared.db import SessionLocal
 
 logger = logging.getLogger(__name__)
@@ -111,3 +112,11 @@ __all__ = [
     "process_message",
     "run_progress_consumer",
 ]
+
+
+async def _main() -> None:
+    await run_progress_consumer(rabbitmq_url=get_settings().rabbitmq_url)
+
+
+if __name__ == "__main__":
+    asyncio.run(_main())
