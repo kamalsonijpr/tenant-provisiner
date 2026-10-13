@@ -40,7 +40,10 @@ class Tenant(Base):
     __tablename__ = "tenants"
     __table_args__ = (
         CheckConstraint("length(slug) BETWEEN 3 AND 28", name="tenant_slug_length"),
-        CheckConstraint("slug ~ '^[a-z][-a-z0-9]{1,26}[a-z0-9]$'", name="tenant_slug_format"),
+        CheckConstraint(
+            "slug ~ '^[a-z][-a-z0-9]{1,26}[a-z0-9]$'",
+            name="tenant_slug_format",
+        ).ddl_if(dialect="postgresql"),
         CheckConstraint("length(name) > 0", name="tenant_name_not_empty"),
         CheckConstraint("version >= 1", name="tenant_version_positive"),
         UniqueConstraint("slug", name="uq_tenants_slug"),

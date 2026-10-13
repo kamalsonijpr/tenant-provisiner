@@ -6,5 +6,7 @@ def utc_now() -> datetime:
 
 
 def format_utc_millis(value: datetime) -> str:
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=UTC)
     utc_value = value.astimezone(UTC)
     return utc_value.isoformat(timespec="milliseconds").replace("+00:00", "Z")

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_serializer
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 from app.shared.state import TaskStatus, TaskType, TenantStatus
 from app.shared.time import format_utc_millis
@@ -14,10 +14,24 @@ class TenantCreate(BaseModel):
     slug: str = Field(min_length=3, max_length=28, pattern=SLUG_PATTERN)
     name: str = Field(min_length=1, max_length=255)
 
+    @field_validator("name")
+    @classmethod
+    def name_must_not_be_whitespace(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Name must not be empty.")
+        return value
+
 
 class TenantUpdate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
     version: int = Field(ge=1)
+
+    @field_validator("name")
+    @classmethod
+    def name_must_not_be_whitespace(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Name must not be empty.")
+        return value
 
 
 class TenantDelete(BaseModel):
