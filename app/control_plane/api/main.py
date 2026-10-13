@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.control_plane.api.errors import register_exception_handlers
+from app.control_plane.api.tasks import router as tasks_router
 from app.control_plane.api.tenants import router as tenants_router
 from app.shared.config import get_settings
 
@@ -10,6 +11,7 @@ def create_app() -> FastAPI:
     app = FastAPI(title=settings.app_name)
     register_exception_handlers(app)
     app.include_router(tenants_router)
+    app.include_router(tasks_router)
 
     @app.get("/health")
     async def health() -> dict[str, str]:
