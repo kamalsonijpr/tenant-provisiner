@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 
+from app.control_plane.api.errors import register_exception_handlers
 from app.shared.config import get_settings
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title=settings.app_name)
+    register_exception_handlers(app)
 
     @app.get("/health")
     async def health() -> dict[str, str]:
