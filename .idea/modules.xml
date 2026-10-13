@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/tenant-provisiner.iml" filepath="$PROJECT_DIR$/.idea/tenant-provisiner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/tenant-provisioner.iml" filepath="$PROJECT_DIR$/.idea/tenant-provisioner.iml" />
     </modules>
   </component>
 </project>
