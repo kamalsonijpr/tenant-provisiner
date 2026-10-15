@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
 
+from app.worker import simulator
 from app.worker.simulator import (
     build_progress_payload,
     build_progress_updates,
@@ -11,6 +13,21 @@ from app.worker.simulator import (
     resolve_delay_ms,
     should_fail_task,
 )
+
+
+def test_worker_cli_uses_configured_rabbitmq_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    configured_url = "amqp://rabbitmq:5672/"
+    monkeypatch.setitem(
+        simulator.__dict__,
+        "get_settings",
+        lambda: SimpleNamespace(rabbitmq_url=configured_url),
+    )
+
+    assert simulator._build_parser().parse_args([]).rabbitmq_url == configured_url
+    assert (
+        simulator._build_parser().parse_args(["--rabbitmq-url", "amqp://custom:5672/"]).rabbitmq_url
+        == "amqp://custom:5672/"
+    )
 
 
 def test_worker_progress_payload_has_expected_shape() -> None:

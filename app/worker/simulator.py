@@ -16,6 +16,7 @@ from app.shared.broker import (
     ensure_exchange_and_queue,
     publish_payload,
 )
+from app.shared.config import get_settings
 from app.shared.time import format_utc_millis, utc_now
 
 logger = logging.getLogger(__name__)
@@ -211,7 +212,7 @@ async def process_task_message(
 
 async def run_worker_simulator(
     *,
-    rabbitmq_url: str = "amqp://guest:guest@localhost:5672/",
+    rabbitmq_url: str | None = None,
     exchange_name: str = EXCHANGE_NAME,
     queue_name: str = QUEUE_NAME,
     routing_key: str = ROUTING_KEY,
@@ -222,11 +223,12 @@ async def run_worker_simulator(
     backoff_seconds: float = 1.0,
     max_backoff_seconds: float = 30.0,
 ) -> None:
+    broker_url = rabbitmq_url or get_settings().rabbitmq_url
     connection = None
     delay = backoff_seconds
     while True:
         try:
-            connection = await connect_robust(rabbitmq_url)
+            connection = await connect_robust(broker_url)
             channel = await connection.channel()
             await ensure_exchange_and_queue(channel, exchange_name, queue_name, routing_key)
 
@@ -280,7 +282,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--worker-id", default="worker-1", help="Stable worker identifier.")
     parser.add_argument(
         "--rabbitmq-url",
-        default="amqp://guest:guest@localhost:5672/",
+        default=get_settings().rabbitmq_url,
         help="RabbitMQ connection string.",
     )
     return parser
