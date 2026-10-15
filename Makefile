@@ -4,11 +4,10 @@ PYTHON ?= python
 DOCKER_COMPOSE ?= docker compose
 
 up:
-	$(DOCKER_COMPOSE) down -v --remove-orphans || true
 	$(DOCKER_COMPOSE) up --build -d
 
 down:
-	$(DOCKER_COMPOSE) down -v --remove-orphans
+	$(DOCKER_COMPOSE) down --remove-orphans
 
 test:
 	$(PYTHON) -m pytest -q

@@ -7,6 +7,8 @@ from datetime import UTC, datetime
 
 import aio_pika
 
+from app.shared.config import get_settings
+
 
 def build_payload(
     *,
@@ -45,7 +47,7 @@ async def publish_progress(
     Example:
         python scripts/publish_progress.py \
             --task-id <uuid> --status in_progress --worker-id demo-worker \
-            --idempotency-key stale-in-progress --rabbitmq-url amqp://guest:guest@localhost:5672/
+            --idempotency-key stale-in-progress
     """
     connection = await aio_pika.connect_robust(rabbitmq_url)
     try:
@@ -59,7 +61,7 @@ async def publish_progress(
                 status=status,
                 worker_id=worker_id,
                 occurred_at=occurred_at,
-                idempotency_key=idempotency_key if repeat == 1 else f"{idempotency_key}-{index}",
+                idempotency_key=idempotency_key,
             )
             message = aio_pika.Message(
                 body=json.dumps(payload, separators=(",", ":")).encode("utf-8"),
@@ -78,7 +80,9 @@ def parse_args() -> argparse.Namespace:
         )
     )
     parser.add_argument(
-        "--rabbitmq-url", default="amqp://guest:guest@localhost:5672/", help="RabbitMQ URL."
+        "--rabbitmq-url",
+        default=get_settings().rabbitmq_url,
+        help="RabbitMQ URL (defaults to APP_RABBITMQ_URL).",
     )
     parser.add_argument("--task-id", required=True, help="UUID of the task to update.")
     parser.add_argument(
